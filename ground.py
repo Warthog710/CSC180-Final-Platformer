@@ -5,6 +5,7 @@ class ground:
     def __init__(self, startingPos):
         self.__pos = startingPos
         self.__texture = pygame.image.load('./assets/ground.png').convert()
+        self.__texture.set_colorkey(constants.COLOR_BLACK)
 
         #If the texture is not divisible by screen width, weird things will happen
         if (constants.SCREEN_WIDTH % self.__texture.get_width() != 0):
