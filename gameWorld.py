@@ -61,4 +61,4 @@ class gameWorld:
         self.__drawBackground()
         self.__grnd1.draw(self.__screen)
         self.__grnd2.draw(self.__screen)
-        pygame.display.flip()
+        pygame.display.update()

@@ -4,21 +4,22 @@ import constants
 from inputHandler import inputHandler
 from gameWorld import gameWorld
 
-#Global constants
-
 def main():
     #Intilize pygame
     pygame.init()
 
     #Game clock, set to 60fps
-    clock = pygame.time.Clock()
     gWorld = gameWorld()
+    clock = pygame.time.Clock()
     iHandle = inputHandler(gWorld)
     running = True
 
     #Images
 
     while running:
+        #Ensure game speed
+        clock.tick(constants.GAME_SPEED)
+        
         #? 1. Process user input
         for event in pygame.event.get():
             if event.type == pygame.KEYDOWN:
@@ -39,9 +40,6 @@ def main():
 
         #? 3. Update display
         gWorld.update()
-
-        #Ensure game speed
-        clock.tick(constants.GAME_SPEED)        
 
     pygame.quit()
 
