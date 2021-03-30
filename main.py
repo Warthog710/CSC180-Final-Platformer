@@ -3,8 +3,12 @@ import pygame
 from inputHandler import inputHandler
 from gameWorld import gameWorld
 
-#TODO: Add obstacles (ceiling obstacle, sawblade, )
-#TODO: Obstacles that are visble should be rendered and checked against. 
+#TODO: Add obstacles (ceiling obstacle, sawblade, stationary box, coin)
+#TODO: Obstacles that are visble should be rendered on screen.
+#TODO: Only check collisions for the closest obstacle
+#TODO: Flip the player when they go back?
+#TODO: Scoring... score is based on how far you go and how many coins you collect
+#TODO: Game will have a finite lenght... determine this length
 
 def main():
     #Intilize pygame
