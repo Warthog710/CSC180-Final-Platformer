@@ -11,6 +11,7 @@ class player:
         self.__originalY = self.__pos[1] - (self.__texture.get_height() + constants.PLAYER_HEIGHT_ADJUST)
         self.__currentY = self.__originalY
         self.__jumpPower = constants.PLAYER_JUMP_VELOCITY
+        self.distance=0
 
         #Scale player
         imgSize = self.__texture.get_size()

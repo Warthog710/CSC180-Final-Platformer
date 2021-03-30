@@ -43,7 +43,11 @@ class inputHandler:
             print('s pressed...')
         if self.__dPressed:
             self.__gWorld.updateBackground((constants.PLAYER_SPEED * timeElapsed, 0))
+            self.__plyr.distance+=constants.PLAYER_SPEED * timeElapsed
         if self.__aPressed:
              self.__gWorld.updateBackground((-constants.PLAYER_SPEED * timeElapsed, 0))
+             self.__plyr.distance-=constants.PLAYER_SPEED * timeElapsed
+        print(self.__plyr.distance)
+    
 
 
