@@ -2,6 +2,7 @@ import pygame
 import constants
 
 from ground import ground
+from player import player
 
 class gameWorld:
     def __init__(self):
@@ -20,6 +21,12 @@ class gameWorld:
         self.__grnd1 = ground((0, constants.SCREEN_HEIGHT))
         self.__grnd2 = ground((constants.SCREEN_WIDTH, constants.SCREEN_HEIGHT))
 
+        #Player
+        self.__plyr = player((constants.PLAYER_HORIZONTAL_POS, constants.SCREEN_HEIGHT - self.__grnd1.getHeight()))
+
+    def getPlayer(self):
+        return self.__plyr
+
     def __drawBackground(self):
         self.__screen.blit(self.__gameSky, (0, 0))
         self.__screen.blit(self.__gameClouds1, self.__backGroundPos1)
@@ -28,23 +35,21 @@ class gameWorld:
 
     #Magic stuff happens here
     def updateBackground(self, pos):
-        self.__backGroundPos1 = tuple(map(lambda i, j: i - j, self.__backGroundPos1, pos))
+        self.__backGroundPos1 = tuple(map(lambda i, j: i - j, self.__backGroundPos1, (pos[0]/constants.CLOUD_SPEED, pos[1]/constants.CLOUD_SPEED)))
         self.__grnd1.setPos(tuple(map(lambda i, j: i - j, self.__grnd1.getPos(), pos)))
 
+        #Check clouds        
         #Determine if the background has room on right
         if (self.__backGroundPos1[0] < 0):
             self.__backGroundPos2 = (constants.SCREEN_WIDTH + self.__backGroundPos1[0], 0)
-            self.__grnd2.setPos((constants.SCREEN_WIDTH + self.__grnd1.getPos()[0], constants.SCREEN_HEIGHT))
 
         #If not, determine if the background has room on the left
         elif (self.__backGroundPos1[0] > 0):
             self.__backGroundPos2 = (-constants.SCREEN_WIDTH + self.__backGroundPos1[0], 0)
-            self.__grnd2.setPos((-constants.SCREEN_WIDTH + self.__grnd1.getPos()[0], constants.SCREEN_HEIGHT))
 
         #Else, place the second image somewhere
         else:
             self.__backGroundPos2 = (constants.SCREEN_WIDTH, 0)
-            self.__grnd2.setPos((constants.SCREEN_WIDTH, constants.SCREEN_HEIGHT))
 
         #If image 1 is off screen swap the images positions
         if (abs(self.__backGroundPos1[0]) > constants.SCREEN_WIDTH):
@@ -52,13 +57,31 @@ class gameWorld:
             self.__backGroundPos1 = self.__backGroundPos2
             self.__backGroundPos2 = temp
 
+        #Check ground
+        #Determine if the background has room on right
+        if (self.__grnd1.getPos()[0] < 0):
+            self.__grnd2.setPos((constants.SCREEN_WIDTH + self.__grnd1.getPos()[0], constants.SCREEN_HEIGHT))
+
+        #If not, determine if the background has room on the left
+        elif (self.__grnd1.getPos()[0] > 0):
+            self.__grnd2.setPos((-constants.SCREEN_WIDTH + self.__grnd1.getPos()[0], constants.SCREEN_HEIGHT))
+
+        #Else, place the second image somewhere
+        else:
+            self.__grnd2.setPos((constants.SCREEN_WIDTH, constants.SCREEN_HEIGHT))
+
+        #If image 1 is off screen swap the images positions
+        if (abs(self.__grnd1.getPos()[0]) > constants.SCREEN_WIDTH):
             temp = self.__grnd1.getPos()
             self.__grnd1.setPos(self.__grnd2.getPos())
             self.__grnd2.setPos(temp)
-        
 
-    def update(self):
+    def update(self, timeElapsed):
+       self.__plyr.updateJump(timeElapsed)     
+
+    def draw(self):
         self.__drawBackground()
         self.__grnd1.draw(self.__screen)
         self.__grnd2.draw(self.__screen)
+        self.__plyr.draw(self.__screen)
         pygame.display.update()

@@ -30,3 +30,6 @@ class ground:
     def draw(self, screen):
         for ground in self.__groundTextures:
             screen.blit(self.__texture, ground)
+    
+    def getHeight(self):
+        return self.__texture.get_height()

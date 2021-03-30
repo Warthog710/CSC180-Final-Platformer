@@ -1,8 +1,10 @@
 import pygame
-import constants
 
 from inputHandler import inputHandler
 from gameWorld import gameWorld
+
+#TODO: Add obstacles (ceiling obstacle, sawblade, )
+#TODO: Obstacles that are visble should be rendered and checked against. 
 
 def main():
     #Intilize pygame
@@ -14,11 +16,9 @@ def main():
     iHandle = inputHandler(gWorld)
     running = True
 
-    #Images
-
     while running:
         #Ensure game speed
-        clock.tick(constants.GAME_SPEED)
+        timeElapsed = clock.tick()
         
         #? 1. Process user input
         for event in pygame.event.get():
@@ -36,10 +36,11 @@ def main():
 
         #? 2. Update the state of all game objects
         #Update player
-        iHandle.update()
+        iHandle.update(timeElapsed)
+        gWorld.update(timeElapsed)
 
         #? 3. Update display
-        gWorld.update()
+        gWorld.draw()
 
     pygame.quit()
 
