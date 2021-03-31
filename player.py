@@ -121,7 +121,7 @@ class player:
                 self.__lastState = self.__states[0]
             elif self.movingFwd:
                 screen.blit(self.__slidingTex, (self.__pos[0] - self.__texture.get_width(), self.__currentY))
-                self.__lastState = self.__states[0]
+                self.__lastState = self.__states[1]
             #If none of the above are true, draw based on the last state
             else:
                 if self.__lastState == self.__states[0]:
