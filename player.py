@@ -9,13 +9,14 @@ class player:
         self.__pos = pos
         self.isJumping = False
         self.__originalY = self.__pos[1] - (self.__texture.get_height() + constants.PLAYER_HEIGHT_ADJUST)
-        self.__currentY = self.__originalY
+        self.currentY = self.__originalY
         self.__jumpPower = constants.PLAYER_JUMP_VELOCITY
         self.distance=0
 
         #Scale player
         imgSize = self.__texture.get_size()
         self.__texture = pygame.transform.scale(self.__texture, (int(imgSize[0] * constants.PLAYER_SCALE), int(imgSize[0] * constants.PLAYER_SCALE)))
+        self.size=self.__texture.get_size()
 
     def updateJump(self, timeElapsed):
         #If jumping
@@ -26,7 +27,7 @@ class player:
                     neg = -1
                 
                 #Modify height
-                self.__currentY -= self.__jumpPower**2 * 0.1 * neg * timeElapsed
+                self.currentY -= self.__jumpPower**2 * 0.1 * neg * timeElapsed
 
                 #Decay power by gravity
                 self.__jumpPower -= constants.GRAVITY
@@ -34,11 +35,11 @@ class player:
             #Else, done jumping, reset everything
             else:
                 self.__jumpPower = constants.PLAYER_JUMP_VELOCITY
-                self.__currentY = self.__originalY
+                self.currentY = self.__originalY
                 self.isJumping = False
 
     def draw(self, screen):
-        screen.blit(self.__texture, (self.__pos[0] - self.__texture.get_width(), self.__currentY))
+        screen.blit(self.__texture, (self.__pos[0] - self.__texture.get_width(), self.currentY))
         
 
     

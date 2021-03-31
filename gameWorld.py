@@ -3,6 +3,7 @@ import constants
 
 from ground import ground
 from player import player
+from objects import objects
 
 class gameWorld:
     def __init__(self):
@@ -23,6 +24,9 @@ class gameWorld:
 
         #Player
         self.__plyr = player((constants.PLAYER_HORIZONTAL_POS, constants.SCREEN_HEIGHT - self.__grnd1.getHeight()))
+
+        #Objects
+        self.__objects=objects(constants.SCREEN_HEIGHT - self.__grnd1.getHeight())
 
     def getPlayer(self):
         return self.__plyr
@@ -77,11 +81,13 @@ class gameWorld:
             self.__grnd2.setPos(temp)
 
     def update(self, timeElapsed):
-       self.__plyr.updateJump(timeElapsed)   
+       self.__plyr.updateJump(timeElapsed)
+       self.__objects.checkCollisions(self.__plyr)
 
     def draw(self):
         self.__drawBackground()
         self.__grnd1.draw(self.__screen)
         self.__grnd2.draw(self.__screen)
         self.__plyr.draw(self.__screen)
+        self.__objects.draw(self.__screen, self.__plyr.distance)
         pygame.display.update()
