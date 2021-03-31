@@ -77,7 +77,8 @@ class gameWorld:
             self.__grnd2.setPos(temp)
 
     def update(self, timeElapsed):
-       self.__plyr.updateJump(timeElapsed)     
+       self.__plyr.updateJump(timeElapsed)
+       self.__plyr.updateSlide()     
 
     def draw(self):
         self.__drawBackground()
