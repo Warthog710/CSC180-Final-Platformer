@@ -3,12 +3,11 @@ import pygame
 from inputHandler import inputHandler
 from gameWorld import gameWorld
 
-#! Priority... Sliding, obstacles, collisions, scoring
+#! Priority... Obstacles, collisions, scoring
 
 #TODO: Add obstacles (ceiling obstacle, sawblade, stationary box, coin)
 #TODO: Obstacles that are visible should be rendered on screen.
 #TODO: Only check collisions for the closest obstacle
-#TODO: Flip the player sprite when they walk back?
 #TODO: Scoring... score is based on how far you go and how many coins you collect (add a weight, going further is worth more than collecting coins)
 #TODO: Game will have a finite lenght... determine this length
 #TODO: Player animations based on state [WALKING, IDLE, SLIDING, JUMPING]
