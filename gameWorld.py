@@ -83,6 +83,12 @@ class gameWorld:
     def update(self, timeElapsed):
        self.__plyr.updateJump(timeElapsed)
        self.__objects.checkCollisions(self.__plyr)
+    
+    def drawHUD(self):
+        myfont = pygame.font.SysFont('Comic Sans MS', 30)
+        text="Score: "+str(self.__plyr.points)
+        textsurface = myfont.render(text, False, (0, 0, 0))
+        self.__screen.blit(textsurface,(0,0))
 
     def draw(self):
         self.__drawBackground()
@@ -90,4 +96,5 @@ class gameWorld:
         self.__grnd2.draw(self.__screen)
         self.__plyr.draw(self.__screen)
         self.__objects.draw(self.__screen, self.__plyr.distance)
+        self.drawHUD()
         pygame.display.update()

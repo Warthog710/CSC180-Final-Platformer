@@ -12,6 +12,7 @@ class player:
         self.currentY = self.__originalY
         self.__jumpPower = constants.PLAYER_JUMP_VELOCITY
         self.distance=0
+        self.points=0
 
         #Scale player
         imgSize = self.__texture.get_size()
@@ -40,6 +41,9 @@ class player:
 
     def draw(self, screen):
         screen.blit(self.__texture, (self.__pos[0] - self.__texture.get_width(), self.currentY))
+    def died(self):
+        self.distance=0
+        self.points=0
         
 
     

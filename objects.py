@@ -16,7 +16,7 @@ class objects:
         self.__sawSize=self.__saw.get_size()
         self.__ceiling = pygame.image.load('./assets/ceiling.png').convert()
         self.__ceilingSize=self.__ceiling.get_size()
-        self.__objectLocations=[('test', (100,0)),('box', (150,0)),('coin', (200,0)), ('coin', (700,50)), ('coin', (750,100)),('coin', (800,50)), ('saw', (1000,0))]
+        self.__objectLocations=[('test', (100,0)),('box', (150,0)),('coin', (200,0), True), ('coin', (700,50), True), ('coin', (750,100), True),('coin', (800,50), True), ('saw', (1000,0))]
     
     def draw(self, screen, screenLocation):
         playerLocation=screenLocation+constants.PLAYER_HORIZONTAL_POS
@@ -32,7 +32,8 @@ class objects:
                 elif(obj[0]=='ceiling'):
                     screen.blit(self.__ceiling, (obj[1][0]-screenLocation,self.ground-obj[1][1]+constants.GRASS_OFFSET-self.__ceilingSize[1]))
                 elif(obj[0]=='coin'):
-                    screen.blit(self.__coin, (obj[1][0]-screenLocation,self.ground-obj[1][1]+constants.GRASS_OFFSET-self.__coinSize[1]))
+                    if obj[2]:
+                        screen.blit(self.__coin, (obj[1][0]-screenLocation,self.ground-obj[1][1]+constants.GRASS_OFFSET-self.__coinSize[1]))
             elif(not obj[1][0]<=screenLocation+constants.SCREEN_WIDTH): #stop if the object if off the right side of the screen
                 break
 
@@ -44,6 +45,7 @@ class objects:
         print(xPlayer)
         yPlayer=(player.currentY+player.size[1], player.currentY)
         print("screen: ", screenLocation)
+        i=0
         for obj in self.__objectLocations: #loop through all objects
             size=(0,0)
             if(obj[0]=='test'):
@@ -62,10 +64,19 @@ class objects:
                     if(obj[0]=='test'):
                         size=self.__testSize
                     elif(obj[0]=='saw'):
-                        player.distance=0
+                        player.died()
+                        print("You Died")
+                        k=0
+                        for item in self.__objectLocations:
+                            if(item[0]=='coin'):
+                                self.__objectLocations[k]=('coin', item[1], True)
+                            k+=1
                     elif(obj[0]=='box'):
                         size=self.__boxSize
                     elif(obj[0]=='ceiling'):
                         size=self.__ceilingSize
                     elif(obj[0]=='coin'):
-                        size=self.__coinSize
+                        if obj[2]:
+                            player.points+=1
+                            self.__objectLocations[i]=('coin', obj[1], False)
+            i+=1
