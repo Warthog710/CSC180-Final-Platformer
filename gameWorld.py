@@ -82,7 +82,9 @@ class gameWorld:
 
     def update(self, timeElapsed):
        self.__plyr.updateJump(timeElapsed)
-       self.__objects.checkCollisions(self.__plyr)
+
+    def collisions(self):
+        self.__objects.checkCollisions(self.__plyr)
     
     def drawHUD(self):
         myfont = pygame.font.SysFont('Comic Sans MS', 30)

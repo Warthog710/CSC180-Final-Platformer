@@ -10,7 +10,7 @@ class objects:
         self.__coin.set_colorkey(constants.COLOR_WHITE)
         self.__coinSize=self.__coin.get_size()
         self.__box = pygame.image.load('./assets/box.png').convert()
-        self.__boxSize=self.__box.get_size()
+        self.__boxSize=(self.__box.get_size())
         self.__saw = pygame.image.load('./assets/saw.png').convert()
         self.__saw.set_colorkey(constants.COLOR_WHITE)
         self.__sawSize=self.__saw.get_size()
@@ -40,11 +40,8 @@ class objects:
     def checkCollisions(self, player):
         playerLocation=player.distance+constants.PLAYER_HORIZONTAL_POS
         screenLocation=player.distance
-        xPlayer=(constants.PLAYER_HORIZONTAL_POS-player.size[0]+7, constants.PLAYER_HORIZONTAL_POS-8)
-        print((constants.PLAYER_HORIZONTAL_POS-player.size[0], constants.PLAYER_HORIZONTAL_POS))
-        print(xPlayer)
+        xPlayer=(constants.PLAYER_HORIZONTAL_POS-player.size[0]+7*constants.PLAYER_SCALE, constants.PLAYER_HORIZONTAL_POS-8*constants.PLAYER_SCALE)
         yPlayer=(player.currentY+player.size[1], player.currentY)
-        print("screen: ", screenLocation)
         i=0
         for obj in self.__objectLocations: #loop through all objects
             size=(0,0)
@@ -72,7 +69,53 @@ class objects:
                                 self.__objectLocations[k]=('coin', item[1], True)
                             k+=1
                     elif(obj[0]=='box'):
-                        size=self.__boxSize
+                        if (xPlayer[1]>=obj[1][0]-screenLocation):
+                            player.distance-=xPlayer[1]-obj[1][0]+screenLocation-1 #one is a constant offset
+                    elif(obj[0]=='ceiling'):
+                        size=self.__ceilingSize
+                    elif(obj[0]=='coin'):
+                        if obj[2]:
+                            player.points+=1
+                            self.__objectLocations[i]=('coin', obj[1], False)
+            i+=1
+
+    #I dont think this is the best approach
+    #This should be deleted
+    def move(self, player, xDist, yDist):
+        screenLocation=player.distance+xDist
+        xPlayer=(constants.PLAYER_HORIZONTAL_POS-player.size[0]+7*constants.PLAYER_SCALE, constants.PLAYER_HORIZONTAL_POS-8*constants.PLAYER_SCALE)
+        yPlayer=(player.currentY+yDist+player.size[1], player.currentY+yDist)
+        i=0
+        moveDistX=xDist
+        moveDistY=yDist
+        for obj in self.__objectLocations: #loop through all objects
+            size=(0,0)
+            if(obj[0]=='test'):
+                size=self.__testSize
+            elif(obj[0]=='saw'):
+                size=self.__sawSize
+            elif(obj[0]=='box'):
+                size=self.__boxSize
+            elif(obj[0]=='ceiling'):
+                size=self.__ceilingSize
+            elif(obj[0]=='coin'):
+                size=self.__coinSize
+            if not ((obj[1][0]-screenLocation)>=xPlayer[1] or xPlayer[0]>=(obj[1][0]-screenLocation+size[0])):
+                if not (self.ground-obj[1][1]+constants.GRASS_OFFSET-size[1] >=yPlayer[0] or self.ground-obj[1][1]+constants.GRASS_OFFSET<=yPlayer[1]):
+                    print('Collision')
+                    if(obj[0]=='test'):
+                        size=self.__testSize
+                    elif(obj[0]=='saw'):
+                        player.died()
+                        print("You Died")
+                        k=0
+                        for item in self.__objectLocations:
+                            if(item[0]=='coin'):
+                                self.__objectLocations[k]=('coin', item[1], True)
+                            k+=1
+                    elif(obj[0]=='box'):
+                        if (xPlayer[1]>=obj[1][0]-screenLocation):
+                            moveDistX-=xPlayer[1]-obj[1][0]+screenLocation-1 #one is a constant offset
                     elif(obj[0]=='ceiling'):
                         size=self.__ceilingSize
                     elif(obj[0]=='coin'):

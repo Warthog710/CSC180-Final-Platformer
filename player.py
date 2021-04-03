@@ -8,19 +8,22 @@ class player:
         self.__texture = pygame.image.load('./assets/player.png').convert()
         self.__pos = pos
         self.isJumping = False
-        self.__originalY = self.__pos[1] - (self.__texture.get_height() + constants.PLAYER_HEIGHT_ADJUST)
-        self.currentY = self.__originalY
+        self.originalY = self.__pos[1] - (self.__texture.get_height() + constants.PLAYER_HEIGHT_ADJUST)
+        self.currentY = self.originalY
         self.__jumpPower = constants.PLAYER_JUMP_VELOCITY
         self.distance=0
         self.points=0
+        self.previousY=self.currentY #Delete
 
         #Scale player
         imgSize = self.__texture.get_size()
         self.__texture = pygame.transform.scale(self.__texture, (int(imgSize[0] * constants.PLAYER_SCALE), int(imgSize[0] * constants.PLAYER_SCALE)))
         self.size=self.__texture.get_size()
+        self.xPos=self.__pos[0] - self.__texture.get_width()
 
     def updateJump(self, timeElapsed):
         #If jumping
+        self.previousY=self.currentY
         if self.isJumping:
             if self.__jumpPower >= -constants.PLAYER_JUMP_VELOCITY:
                 neg = 1
@@ -36,7 +39,7 @@ class player:
             #Else, done jumping, reset everything
             else:
                 self.__jumpPower = constants.PLAYER_JUMP_VELOCITY
-                self.currentY = self.__originalY
+                self.currentY = self.originalY
                 self.isJumping = False
 
     def draw(self, screen):
@@ -44,6 +47,4 @@ class player:
     def died(self):
         self.distance=0
         self.points=0
-        
-
     

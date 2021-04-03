@@ -48,6 +48,7 @@ def main():
 
         #? 3. Update display
         gWorld.draw()
+        gWorld.collisions()
 
     pygame.quit()
 
