@@ -1,6 +1,7 @@
 import pygame
 import constants
 
+from obstacles import obstacles
 from ground import ground
 from player import player
 
@@ -22,10 +23,16 @@ class gameWorld:
         self.__grnd2 = ground((constants.SCREEN_WIDTH, constants.SCREEN_HEIGHT))
 
         #Player
-        self.__plyr = player((constants.PLAYER_HORIZONTAL_POS, constants.SCREEN_HEIGHT - self.__grnd1.getHeight()))
+        self.__plyr = player((constants.PLAYER_HORIZONTAL_POS, constants.SCREEN_HEIGHT - self.__grnd1.getHeight()), self)
+
+        #Obstacles
+        self.__obst = obstacles(self.__plyr)
 
     def getPlayer(self):
         return self.__plyr
+
+    def getObstacles(self):
+        return self.__obst
 
     def __drawBackground(self):
         self.__screen.blit(self.__gameSky, (0, 0))
@@ -78,11 +85,13 @@ class gameWorld:
 
     def update(self, timeElapsed):
        self.__plyr.updateJump(timeElapsed)
-       self.__plyr.updateSlide()     
+       self.__plyr.updateSlide()
 
     def draw(self):
         self.__drawBackground()
         self.__grnd1.draw(self.__screen)
         self.__grnd2.draw(self.__screen)
+        pygame.draw.rect(self.__screen, constants.COLOR_WHITE, self.__plyr.getBoundingBox())
+        self.__obst.draw(self.__screen)
         self.__plyr.draw(self.__screen)
         pygame.display.update()
