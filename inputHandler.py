@@ -12,17 +12,19 @@ class inputHandler:
 
         #Player reference
         self.__plyr = gWorld.getPlayer()
+        self.__obst = gWorld.getObstacles()
 
 
     #Register a keydown event on WASD
     def registerKeydown(self, event):
         if event.key == pygame.K_w:
-            #Jump if not already jumping
-            if not self.__plyr.isJumping:
+            #Jump if not already jumping and not sliding
+            if not self.__plyr.isJumping and not self.__plyr.isSliding:
                 self.__plyr.isJumping = True
+                self.__plyr.onObject = False
         elif event.key == pygame.K_s:
-            #Set is sliding to true only if we are not jump
-            if not self.__plyr.isJumping:
+            #Set is sliding to true only if we are not jump and not on an object
+            if not self.__plyr.isJumping and not self.__plyr.onObject:
                 self.__plyr.isSliding = True
         elif event.key == pygame.K_d:
             self.__dPressed = True
@@ -45,9 +47,27 @@ class inputHandler:
     def update(self, timeElapsed):
         if self.__dPressed:
             self.__gWorld.updateBackground((self.__plyr.playerSpeed * timeElapsed, 0))
+            self.__plyr.distance += (self.__plyr.playerSpeed * timeElapsed)
             self.__plyr.movingFwd = True
+
+            #If we collide revert the changes
+            if self.__obst.detectCollision():
+                self.__gWorld.updateBackground((-self.__plyr.playerSpeed * timeElapsed, 0))
+                self.__plyr.distance -= (self.__plyr.playerSpeed * timeElapsed)
+                self.__plyr.movingFwd = False
+
         if self.__aPressed:
              self.__gWorld.updateBackground((-self.__plyr.playerSpeed * timeElapsed, 0))
+             self.__plyr.distance -= (self.__plyr.playerSpeed * timeElapsed)
              self.__plyr.movingBwd = True
+
+            #If we collide revert the changes
+             if self.__obst.detectCollision():
+                self.__gWorld.updateBackground((self.__plyr.playerSpeed * timeElapsed, 0))
+                self.__plyr.distance += (self.__plyr.playerSpeed * timeElapsed)
+                self.__plyr.movingBwd = False
+        
+        if self.__plyr.forcedSlide:
+            self.__plyr.isSliding = False
 
 
