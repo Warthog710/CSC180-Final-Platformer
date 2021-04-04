@@ -2,7 +2,6 @@ import pygame
 
 from inputHandler import inputHandler
 from gameWorld import gameWorld
-
 #! Priority... Obstacles, collisions, scoring
 
 #! TODO Record sources for textures in README.md
@@ -16,7 +15,7 @@ def main():
     #Intilize pygame
     pygame.init()
 
-    #Game clock, set to 60fps
+    #Game clock
     gWorld = gameWorld()
     clock = pygame.time.Clock()
     iHandle = inputHandler(gWorld)
