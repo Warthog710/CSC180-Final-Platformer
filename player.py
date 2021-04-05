@@ -1,10 +1,7 @@
 import pygame
 import constants
-
-from inputHandler import inputHandler
-
 class player:
-    def __init__(self, pos):
+    def __init__(self, pos, gWorld):
         #Textures
         self.__idleTextures = [pygame.image.load('./assets/idle0.png').convert(), pygame.image.load('./assets/idle1.png').convert(), 
                                 pygame.image.load('./assets/idle2.png').convert(), pygame.image.load('./assets/idle3.png').convert()]
@@ -15,19 +12,26 @@ class player:
 
         self.__slidingTex = pygame.image.load('./assets/sliding.png').convert()
         self.__jumpingTex = pygame.image.load('./assets/jump.png').convert()
-        self.__texture = self.__idleTextures[0]
+        self.texture = self.__idleTextures[0]
+
+        #Gameworld reference
+        self.__gWorld = gWorld
+
+        #Player information
+        self.distance = 0
+        self.coinsCollected = 0
 
         #Animation indexes
         self.__idleIndex = 0
         self.__runningIndex = 0
 
         #Position. CurrentY holds the y cord the texture will be drawn at. OriginalY holds the original value so we can reset it later
-        self.__pos = pos
-        self.__originalY = self.__pos[1] - (self.__texture.get_height() + constants.PLAYER_HEIGHT_ADJUST)
-        self.__currentY = self.__originalY
+        self.pos = pos
+        self.originalY = self.pos[1] - (self.texture.get_height() + constants.PLAYER_HEIGHT_ADJUST)
+        self.currentY = self.originalY
 
         #Player speed and jump velocity (power)
-        self.__jumpPower = constants.PLAYER_JUMP_VELOCITY
+        self.__jumpPower = -constants.PLAYER_JUMP_VELOCITY
         self.playerSpeed = constants.PLAYER_SPEED
 
         #Boolean flags
@@ -36,6 +40,8 @@ class player:
         self.movingFwd = False
         self.movingBwd = False
         self.__slidingTextureInUse = False
+        self.forcedSlide = False
+        self.onObject = False
 
         #States to maintain the last facing position. This prevent us from restoring the default position if nothing is being pressed
         self.__animationStates = ['WALKING', 'IDLE', 'SLIDING', 'JUMPING']
@@ -43,10 +49,10 @@ class player:
         self.__lastState = self.__states[1]
 
         #Scale player textures
-        imgSize = self.__texture.get_size()
+        imgSize = self.texture.get_size()
         slidingSize = self.__slidingTex.get_size()
         jmpSize = self.__jumpingTex.get_size()
-        self.__texture = pygame.transform.scale(self.__texture, (int(imgSize[0] * constants.PLAYER_SCALE), int(imgSize[0] * constants.PLAYER_SCALE)))
+        self.texture = pygame.transform.scale(self.texture, (int(imgSize[0] * constants.PLAYER_SCALE), int(imgSize[0] * constants.PLAYER_SCALE)))
         self.__slidingTex = pygame.transform.scale(self.__slidingTex, (int(slidingSize[0] * constants.PLAYER_SCALE), int(slidingSize[0] * constants.PLAYER_SCALE)))
         self.__jumpingTex = pygame.transform.scale(self.__jumpingTex, (int(jmpSize[0] * constants.PLAYER_SCALE), int(jmpSize[0] * constants.PLAYER_SCALE)))
 
@@ -78,7 +84,7 @@ class player:
         animationState = self.__getAnimationState()
 
         if 'IDLE' in animationState:
-            self.__texture = self.__idleTextures[self.__idleIndex//constants.PLAYER_ANIMATION_FRAME_REPEAT]
+            self.texture = self.__idleTextures[self.__idleIndex//constants.PLAYER_ANIMATION_FRAME_REPEAT]
             self.__idleIndex = (self.__idleIndex + 1) % (len(self.__idleTextures) * constants.PLAYER_ANIMATION_FRAME_REPEAT) 
             self.__runningIndex = 0 
 
@@ -89,7 +95,7 @@ class player:
                 return False
 
         elif 'WALKING' in animationState:
-            self.__texture = self.__runTextures[self.__runningIndex//constants.PLAYER_ANIMATION_FRAME_REPEAT]
+            self.texture = self.__runTextures[self.__runningIndex//constants.PLAYER_ANIMATION_FRAME_REPEAT]
             self.__runningIndex = (self.__runningIndex + 1) % (len(self.__runTextures) * constants.PLAYER_ANIMATION_FRAME_REPEAT)
             self.__idleIndex = 0
             if self.movingBwd:
@@ -100,7 +106,7 @@ class player:
                 return False
 
         elif 'SLIDING' in animationState:
-            self.__texture = self.__slidingTex
+            self.texture = self.__slidingTex
             self.__runningIndex = 0
             self.__idleIndex = 0
 
@@ -111,7 +117,7 @@ class player:
                 return False
 
         else:
-            self.__texture = self.__jumpingTex
+            self.texture = self.__jumpingTex
             self.__runningIndex = 0
             self.__idleIndex = 0
 
@@ -123,49 +129,66 @@ class player:
 
     #? The horizontal speed of the player now increases during the jump until it hits a max speed.
     def updateJump(self, timeElapsed):
-        #If sliding, reset the slide
-        if self.isSliding and self.isJumping:
-            self.__slidingTextureInUse = False
-            self.isSliding = False
-            
-            #Reset height
-            self.__currentY = self.__originalY
-
-            #Restore player speed
-            self.playerSpeed = constants.PLAYER_SPEED
-
         #If jumping
         if self.isJumping:
-            if self.__jumpPower >= -constants.PLAYER_JUMP_VELOCITY:
-                neg = 1
-                if self.__jumpPower < 0:
-                    neg = -1
-                
-                #Modify height
-                self.__currentY -= self.__jumpPower**2 * 0.1 * neg * timeElapsed
+            self.currentY += self.__jumpPower * timeElapsed
+            self.__jumpPower += constants.GRAVITY * timeElapsed
 
-                #Decay power by gravity
-                self.__jumpPower -= constants.GRAVITY
+            #Increase player horinzontal speed while jumping
+            self.playerSpeed += constants.PLAYER_JUMPING_HORIZONTAL_SPEED_INCREASE
+            if self.playerSpeed > constants.PLAYER_JUMPING_HORIZONTAL_SPEED_MAX_SPEED:
+                self.playerSpeed = constants.PLAYER_JUMPING_HORIZONTAL_SPEED_MAX_SPEED
 
-                #Set jumping speed, does not exceed max speed...
-                self.playerSpeed += constants.PLAYER_JUMPING_HORIZONTAL_SPEED_INCREASE * timeElapsed
-                if self.playerSpeed > constants.PLAYER_JUMPING_HORIZONTAL_SPEED_MAX_SPEED:
-                    self.playerSpeed = constants.PLAYER_JUMPING_HORIZONTAL_SPEED_MAX_SPEED                
+            #If I collide with an object
+            if self.__gWorld.getObstacles().detectCollision():
+                #If I am going down
+                if self.__jumpPower > 0:
+                    #I must be on an object... stop the jump, reset to previous y
+                    self.currentY -= self.__jumpPower * timeElapsed
+                    self.isJumping = False
+                    self.__jumpPower = -constants.PLAYER_JUMP_VELOCITY
+                    self.playerSpeed = constants.PLAYER_SPEED
+                    self.onObject = True
 
-            #Else, done jumping, reset everything
-            else:
-                self.__jumpPower = constants.PLAYER_JUMP_VELOCITY
-                self.__currentY = self.__originalY
-                self.playerSpeed = constants.PLAYER_SPEED
+                #Else, I must be going up, set jump velocity to 0 and restore to previous position
+                else:
+                    self.currentY -= self.__jumpPower * timeElapsed
+                    self.__jumpPower = 0
+
+
+            if self.currentY > self.originalY:
                 self.isJumping = False
+                self.__jumpPower = -constants.PLAYER_JUMP_VELOCITY
+                self.playerSpeed = constants.PLAYER_SPEED
+                self.currentY = self.originalY
 
+    def reset(self):
+        self.distance = 0
+        self.coinsCollected = 0
+        self.__lastState = 'fwd'
+
+    def getBoundingBox(self):
+        if not self.isSliding:
+            return pygame.Rect((self.pos[0] - self.texture.get_width()) + (7 * constants.PLAYER_SCALE), self.currentY + 
+                    (4 * constants.PLAYER_SCALE), self.texture.get_width() - 2 *(7 * constants.PLAYER_SCALE), 
+                    self.texture.get_height() - (4 * constants.PLAYER_SCALE))
+        else:
+            if 'bwd' in self.__lastState:
+                return pygame.Rect((self.pos[0] - self.texture.get_width()) + (9 * constants.PLAYER_SCALE), self.currentY + 
+                        (9 * constants.PLAYER_SCALE), self.texture.get_width() - 2 *(7 * constants.PLAYER_SCALE), 
+                        self.texture.get_height() - 2 * (8 * constants.PLAYER_SCALE))     
+            else:
+                return pygame.Rect((self.pos[0] - self.texture.get_width()) + (5 * constants.PLAYER_SCALE), self.currentY + 
+                        (9 * constants.PLAYER_SCALE), self.texture.get_width() - 2 *(7 * constants.PLAYER_SCALE), 
+                        self.texture.get_height() - 2 * (8 * constants.PLAYER_SCALE))               
+        
     #? Player speed slowly decays while we are sliding...
     #? Not a big fan of this function... it works but its pretty ugly
-    def updateSlide(self):            
+    def updateSlide(self):       
         #If not jumping, and sliding is true, and I am not rotated...
         if self.isSliding and not self.__slidingTextureInUse:
             #Modifiy player height
-            self.__currentY += constants.PLAYER_SLIDING_OFFSET
+            self.currentY += constants.PLAYER_SLIDING_OFFSET
 
             #Set sliding texture to true
             self.__slidingTextureInUse = True
@@ -174,29 +197,45 @@ class player:
         elif self.isSliding and self.__slidingTextureInUse:
             self.playerSpeed -= constants.PLAYER_SLIDING_DECAY
 
-            #Speed cannot fall below zero
-            if self.playerSpeed < 0:
-                self.playerSpeed = 0
+            #Speed cannot fall below min sleed spped
+            if self.playerSpeed < constants.PLAYER_MIN_SLIDING_SPEED:
+                self.playerSpeed = constants.PLAYER_MIN_SLIDING_SPEED
 
         #If I am no longer sliding but still have the sliding texture, reset it
         elif not self.isSliding and self.__slidingTextureInUse:
+
+            #If by getting up I collide with an object... don't stop sliding
+            if self.__gWorld.getObstacles().detectCollision():
+                self.isSliding = True
+                self.forcedSlide = True
+
+                if self.forcedSlide:
+                    self.playerSpeed -= constants.PLAYER_SLIDING_DECAY
+
+                    #Speed cannot fall below min sleed spped
+                    if self.playerSpeed < constants.PLAYER_MIN_SLIDING_SPEED:
+                        self.playerSpeed = constants.PLAYER_MIN_SLIDING_SPEED
+                return
+
             self.__slidingTextureInUse = False
+            self.forcedSlide = False
 
             #Reset height
-            self.__currentY = self.__originalY
+            self.currentY = self.originalY
 
             #Restore player speed
             self.playerSpeed = constants.PLAYER_SPEED
 
+
     def draw(self, screen):
         #Animate!
         flip = self.__animate()
-
+        
         #Flip texture if moving bwd
         if flip:
-            screen.blit(pygame.transform.flip(self.__texture, True, False), (self.__pos[0] - self.__texture.get_width(), self.__currentY))
+            screen.blit(pygame.transform.flip(self.texture, True, False), (self.pos[0] - self.texture.get_width(), self.currentY))
         else:
-            screen.blit(self.__texture, (self.__pos[0] - self.__texture.get_width(), self.__currentY))
+            screen.blit(self.texture, (self.pos[0] - self.texture.get_width(), self.currentY))
 
 
 
