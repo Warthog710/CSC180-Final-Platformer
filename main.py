@@ -2,13 +2,10 @@ import pygame
 
 from inputHandler import inputHandler
 from gameWorld import gameWorld
-#! Priority... Obstacles, collisions, scoring
+from statistics import statistics
 
-#! TODO Record sources for textures in README.md
-#TODO: Add obstacles (ceiling obstacle, sawblade, stationary box, coin)
-#TODO: Obstacles that are visible should be rendered on screen.
-#TODO: Only check collisions for the closest obstacle
-#TODO: Scoring... score is based on how far you go and how many coins you collect (add a weight, going further is worth more than collecting coins)
+#TODO Record sources for textures in README.md
+
 #TODO: Game will have a finite lenght... determine this length
 
 def main():
@@ -19,6 +16,7 @@ def main():
     gWorld = gameWorld()
     clock = pygame.time.Clock()
     iHandle = inputHandler(gWorld)
+    stat = statistics(gWorld.getPlayer(), iHandle, gWorld)
     running = True
 
     while running:
@@ -46,6 +44,8 @@ def main():
 
         #? 3. Update display
         gWorld.draw()
+        stat.drawHud()
+        pygame.display.update()
 
     pygame.quit()
 
