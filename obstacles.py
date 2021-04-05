@@ -37,16 +37,25 @@ class obstacles:
         self.__chunkWidth = constants.SCREEN_WIDTH / constants.NUM_CHUNKS
         self.__startingPlayerChunk = math.floor(self.__plyr.pos[0] / self.__chunkWidth)
 
-        self.__obstacleDict = {
-            3: ('saw', (0, 0)),
-            7: ('vine', (0, 0)),
-            10: ('box', (0, 0)),
-            11: ('box', (0, -96)),
-            12: ('box', (0, 0)),
-            14: ('coin', (0, 0), True),
-            15: ('coin', (0, -40), True),
-            16: ('coin', (0, -80), True),
-        }
+        self.__obstacleDict = self.__loadMap()
+        
+
+    #Takes a map object, and loads the map
+    def __loadMap(self):
+        mapFile = open('./assets/maps/map.txt', 'r')
+        obst = {}
+
+        for line in mapFile:
+            temp = line.strip('\n').split(',')
+
+            #If its a coin we add a boolean to the tuple
+            if 'coin' in temp[1]:
+                obst[int(temp[0])] = (temp[1], (int(temp[2]), int(temp[3])), True)
+            else:
+                obst[int(temp[0])] = (temp[1], (int(temp[2]), int(temp[3])))
+        
+        mapFile.close()
+        return obst          
 
     #? For collisions, we will look at the the players chunk and before and ahead of it 2 chunks
     def detectCollision(self):
@@ -65,8 +74,7 @@ class obstacles:
                     if obstacleRect.colliderect(self.__plyr.getBoundingBox()):
                         #? Since we hit a saw, we will reset the game
                         self.__plyr.reset()
-
-                        #! Don't forget to reset the coins!!!
+                        self.__obstacleDict = self.__loadMap()
                         return True
                 elif 'box' in self.__obstacleDict[startingChunk][0]:
                     pos = (self.__transChunkToPxl(startingChunk) + self.__obstacleDict[startingChunk][1][0], self.__obstacleDict[startingChunk][1][1])
