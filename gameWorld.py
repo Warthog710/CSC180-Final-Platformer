@@ -90,6 +90,17 @@ class gameWorld:
        self.__plyr.updateJump(timeElapsed)
        self.__plyr.updateSlide()
 
+       #Detect if a player is no longer on an object
+       if self.__plyr.onObject:
+           self.__plyr.currentY += (constants.PLAYER_JUMP_VELOCITY / 3) * timeElapsed
+
+           if self.__obst.detectCollision():
+               self.__plyr.currentY -= (constants.PLAYER_JUMP_VELOCITY / 3) * timeElapsed
+
+           elif self.__plyr.currentY > self.__plyr.originalY:
+                self.__plyr.currentY = self.__plyr.originalY
+                self.__plyr.onObject = False
+
     def draw(self):
         self.__drawBackground()
         self.__grnd1.draw(self.__screen)

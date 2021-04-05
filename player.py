@@ -27,8 +27,8 @@ class player:
 
         #Position. CurrentY holds the y cord the texture will be drawn at. OriginalY holds the original value so we can reset it later
         self.pos = pos
-        self.__originalY = self.pos[1] - (self.texture.get_height() + constants.PLAYER_HEIGHT_ADJUST)
-        self.currentY = self.__originalY
+        self.originalY = self.pos[1] - (self.texture.get_height() + constants.PLAYER_HEIGHT_ADJUST)
+        self.currentY = self.originalY
 
         #Player speed and jump velocity (power)
         self.__jumpPower = -constants.PLAYER_JUMP_VELOCITY
@@ -156,11 +156,11 @@ class player:
                     self.__jumpPower = 0
 
 
-            if self.currentY > self.__originalY:
+            if self.currentY > self.originalY:
                 self.isJumping = False
                 self.__jumpPower = -constants.PLAYER_JUMP_VELOCITY
                 self.playerSpeed = constants.PLAYER_SPEED
-                self.currentY = self.__originalY
+                self.currentY = self.originalY
 
     def reset(self):
         self.distance = 0
@@ -221,7 +221,7 @@ class player:
             self.forcedSlide = False
 
             #Reset height
-            self.currentY = self.__originalY
+            self.currentY = self.originalY
 
             #Restore player speed
             self.playerSpeed = constants.PLAYER_SPEED
@@ -230,18 +230,6 @@ class player:
     def draw(self, screen):
         #Animate!
         flip = self.__animate()
-
-        #If I am on a box move player down
-        if self.onObject:
-            self.currentY -= self.__jumpPower / 2
-
-            #If I am now colliding, revert the change
-            if self.__gWorld.getObstacles().detectCollision():
-                self.currentY += self.__jumpPower / 2
-            #Else if I am back on original y reset y
-            elif self.currentY > self.__originalY:
-                self.currentY = self.__originalY
-                self.onObject = False
         
         #Flip texture if moving bwd
         if flip:
