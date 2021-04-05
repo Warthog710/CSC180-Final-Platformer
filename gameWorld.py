@@ -34,6 +34,9 @@ class gameWorld:
     def getObstacles(self):
         return self.__obst
 
+    def getScreen(self):
+        return self.__screen
+
     def __drawBackground(self):
         self.__screen.blit(self.__gameSky, (0, 0))
         self.__screen.blit(self.__gameClouds1, self.__backGroundPos1)
@@ -91,7 +94,6 @@ class gameWorld:
         self.__drawBackground()
         self.__grnd1.draw(self.__screen)
         self.__grnd2.draw(self.__screen)
-        pygame.draw.rect(self.__screen, constants.COLOR_WHITE, self.__plyr.getBoundingBox())
+        #pygame.draw.rect(self.__screen, constants.COLOR_WHITE, self.__plyr.getBoundingBox())
         self.__obst.draw(self.__screen)
         self.__plyr.draw(self.__screen)
-        pygame.display.update()
