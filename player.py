@@ -150,11 +150,22 @@ class player:
                     self.playerSpeed = constants.PLAYER_SPEED
                     self.onObject = True
 
+                #Else, I must be going up, set jump velocity to 0 and restore to previous position
+                else:
+                    self.currentY -= self.__jumpPower
+                    self.__jumpPower = 0
+
+
             if self.currentY > self.__originalY:
                 self.isJumping = False
                 self.__jumpPower = -constants.PLAYER_JUMP_VELOCITY
                 self.playerSpeed = constants.PLAYER_SPEED
                 self.currentY = self.__originalY
+
+    def reset(self):
+        self.distance = 0
+        self.coinsCollected = 0
+        self.__lastState = 'fwd'
 
     def getBoundingBox(self):
         if not self.isSliding:
@@ -169,10 +180,8 @@ class player:
             else:
                 return pygame.Rect((self.pos[0] - self.texture.get_width()) + (5 * constants.PLAYER_SCALE), self.currentY + 
                         (9 * constants.PLAYER_SCALE), self.texture.get_width() - 2 *(7 * constants.PLAYER_SCALE), 
-                        self.texture.get_height() - 2 * (8 * constants.PLAYER_SCALE))                      
+                        self.texture.get_height() - 2 * (8 * constants.PLAYER_SCALE))               
         
-
-
     #? Player speed slowly decays while we are sliding...
     #? Not a big fan of this function... it works but its pretty ugly
     def updateSlide(self):       
