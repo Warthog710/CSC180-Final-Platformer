@@ -233,17 +233,15 @@ class player:
 
         #If I am on a box move player down
         if self.onObject:
-            self.currentY -= self.__jumpPower / 3
+            self.currentY -= self.__jumpPower / 2
 
             #If I am now colliding, revert the change
             if self.__gWorld.getObstacles().detectCollision():
-                self.currentY += self.__jumpPower / 3
+                self.currentY += self.__jumpPower / 2
             #Else if I am back on original y reset y
             elif self.currentY > self.__originalY:
                 self.currentY = self.__originalY
                 self.onObject = False
-
-
         
         #Flip texture if moving bwd
         if flip:
