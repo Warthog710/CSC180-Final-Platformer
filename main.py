@@ -9,6 +9,7 @@ from statistics import statistics
 def main():
     #Intilize pygame
     pygame.init()
+    pygame.display.set_caption('Panda Runner')
 
     #Game clock
     gWorld = gameWorld()
