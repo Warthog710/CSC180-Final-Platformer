@@ -6,8 +6,6 @@ from statistics import statistics
 
 #TODO Record sources for textures in README.md
 
-#TODO: Game will have a finite lenght... determine this length
-
 def main():
     #Intilize pygame
     pygame.init()
