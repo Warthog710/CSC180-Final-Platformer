@@ -42,6 +42,7 @@ class player:
         self.__slidingTextureInUse = False
         self.forcedSlide = False
         self.onObject = False
+        self.gameReset = False
 
         #States to maintain the last facing position. This prevent us from restoring the default position if nothing is being pressed
         self.__animationStates = ['WALKING', 'IDLE', 'SLIDING', 'JUMPING']
@@ -166,6 +167,7 @@ class player:
         self.distance = 0
         self.coinsCollected = 0
         self.__lastState = 'fwd'
+        self.gameReset = True
 
     def getBoundingBox(self):
         if not self.isSliding:

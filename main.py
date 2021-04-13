@@ -1,6 +1,8 @@
 import pygame
+from pygame import constants
 
 from inputHandler import inputHandler
+from dataRecorder import dataRecorder
 from gameWorld import gameWorld
 from statistics import statistics
 
@@ -18,9 +20,15 @@ def main():
     stat = statistics(gWorld.getPlayer(), iHandle, gWorld)
     running = True
 
+    #Data collection
+    dRecorder = dataRecorder(iHandle, stat, gWorld)
+
     while running:
         #Ensure game speed
         timeElapsed = clock.tick()
+
+        #Reset key state
+        keyState = None
         
         #? 1. Process user input
         for event in pygame.event.get():
@@ -36,15 +44,25 @@ def main():
             elif event.type == pygame.QUIT:
                 running = False
 
+        state = pygame.key.get_pressed()
+        if state[pygame.K_w]:
+            keyState = 'W'
+        elif state[pygame.K_s]:
+            keyState = 'S'
+
         #? 2. Update the state of all game objects
         #Update player
         iHandle.update(timeElapsed)
         gWorld.update(timeElapsed)
 
+        #? Take a screenshot of the last frame
+        dRecorder.takeScreenshot(keyState)
+
         #? 3. Update display
         gWorld.draw()
         stat.drawHud()
         pygame.display.update()
+
 
     pygame.quit()
 

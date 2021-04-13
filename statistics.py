@@ -9,10 +9,12 @@ class statistics:
         self.__plyr = plyr
         self.__iHandle = iHandle
         self.__gWorld = gWorld
+        self.__gameStart = datetime.now()
         self.__lastDistance = self.__plyr.distance
         self.__lastMoveTime = datetime.now()
         self.__font = pygame.font.SysFont('./assets/FutilePro.ttf', constants.FONT_SIZE)
         self.levelFinished = False
+        self.timeLevelFinished = None
         self.FinalScore = 0
 
     def getScore(self):
@@ -42,11 +44,24 @@ class statistics:
     def getLastActionTime(self):
         return (datetime.now() - self.__iHandle.lastAction).total_seconds()
 
+    def getTimeElapsed(self):
+        if not self.levelFinished:
+            return (datetime.now() - self.__gameStart).total_seconds()
+        else:
+            return (self.timeLevelFinished - self.__gameStart).total_seconds()
+
+    def resetTimeElapsed(self):
+        self.__gameStart = datetime.now()
+
     def drawHud(self):
         #Detect if the level is finished
         if self.__plyr.distance > (constants.LEVEL_LENGTH - self.__plyr.pos[0]):
             self.levelFinished = True
             
+            #Record the time finished if we have not done so already
+            if self.timeLevelFinished == None:
+                self.timeLevelFinished = datetime.now()
+
             #Record the score if we have not done so already
             if self.FinalScore == 0:
                 self.FinalScore = self.getScore()
@@ -56,15 +71,21 @@ class statistics:
             hudStr2 = 'Coins Collected: ' + str(self.__plyr.coinsCollected)
             hudStr3 = 'Idle Time: ' + str(round(self.getIdleTime(), 2))
             hudStr4 = 'Last Action Time: ' + str(round(self.getLastActionTime(), 2))
+            hudStr5 = 'Time Elapsed: ' + str(round(self.getTimeElapsed(), 2))
             hud1 = self.__font.render(hudStr1, True, constants.COLOR_BLACK)
             hud2 = self.__font.render(hudStr2, True, constants.COLOR_BLACK)
             hud3 = self.__font.render(hudStr3, True, constants.COLOR_BLACK)
             hud4 = self.__font.render(hudStr4, True, constants.COLOR_BLACK)
+            hud5 = self.__font.render(hudStr5, True, constants.COLOR_BLACK)
             self.__gWorld.getScreen().blit(hud1, (10, 10))
             self.__gWorld.getScreen().blit(hud2, (10, 10 + constants.FONT_SIZE))
             self.__gWorld.getScreen().blit(hud3, (10, 10 + constants.FONT_SIZE * 2))
             self.__gWorld.getScreen().blit(hud4, (10, 10 + constants.FONT_SIZE * 3))
+            self.__gWorld.getScreen().blit(hud5, (10, 10 + constants.FONT_SIZE * 4))
         else:
             hudStr1 = 'LEVEL FINISHED, Final Score: ' + str(self.FinalScore)
+            hudStr2 = 'Time Elapsed: ' + str(round(self.getTimeElapsed(), 2))
             hud1 = self.__font.render(hudStr1, True, constants.COLOR_BLACK)
+            hud2 = self.__font.render(hudStr2, True, constants.COLOR_BLACK)
             self.__gWorld.getScreen().blit(hud1, (10, 10))
+            self.__gWorld.getScreen().blit(hud2, (10, 10 + constants.FONT_SIZE))
