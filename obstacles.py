@@ -104,7 +104,7 @@ class obstacles:
         return False
 
     def getSawBladeRect(self, pos):
-        return pygame.Rect((pos[0] - self.__plyr.distance) + (6 * constants.OBSTACLES_SCALE), (pos[1] + (constants.SCREEN_HEIGHT - constants.GRASS_OFFSET)) + (6 * constants.OBSTACLES_SCALE), self.__sawBladeTexture.get_width() - 2 * (6 * constants.OBSTACLES_SCALE), self.__sawBladeTexture.get_height() - 2 * (6 * constants.OBSTACLES_SCALE))
+        return pygame.Rect((pos[0] - self.__plyr.distance) + (6 * constants.OBSTACLES_SCALE), (pos[1] + (constants.SCREEN_HEIGHT - constants.GRASS_OFFSET)) + (6 * constants.OBSTACLES_SCALE) + 5, self.__sawBladeTexture.get_width() - 2 * (6 * constants.OBSTACLES_SCALE), self.__sawBladeTexture.get_height() - 2 * (6 * constants.OBSTACLES_SCALE) - 5)
 
     def getVineRect(self, pos):
         return pygame.Rect(pos[0] - self.__plyr.distance + (12 * constants.OBSTACLES_SCALE), pos[1], self.__vineTexture.get_width() - (12 * constants.OBSTACLES_SCALE), self.__vineTexture.get_height() - (3 * constants.OBSTACLES_SCALE))
