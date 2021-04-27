@@ -1,10 +1,11 @@
 import pygame
-from pygame import constants
+import constants
 
 from inputHandler import inputHandler
 from dataRecorder import dataRecorder
 from gameWorld import gameWorld
 from statistics import statistics
+from aiPlayer import aiPlayer
 
 #TODO Record sources for textures in README.md
 
@@ -23,6 +24,9 @@ def main():
     #Data collection
     dRecorder = dataRecorder(iHandle, stat, gWorld)
 
+    #AI Player
+    ai = aiPlayer()
+
     while running:
         #Ensure game speed
         timeElapsed = clock.tick()
@@ -30,7 +34,7 @@ def main():
         #Reset key state
         keyState = None
         
-        #? 1. Process user input
+        #? 1. Process user input (if human)
         for event in pygame.event.get():
             if event.type == pygame.KEYDOWN:
                 #If we get an escape key, kill the program
@@ -43,6 +47,13 @@ def main():
             #If the X button on the window is pressed...
             elif event.type == pygame.QUIT:
                 running = False
+
+        #? 1.1 Process input for AI
+        if constants.AI_PLAYER:
+            pred = ai.predictAction(gWorld.getScreen())
+
+            # Send the prediction to the input handler
+            iHandle.registerPredictedMovement(pred)
 
         state = pygame.key.get_pressed()
         if state[pygame.K_w]:
@@ -62,6 +73,8 @@ def main():
         gWorld.draw()
         stat.drawHud()
         pygame.display.update()
+
+        #print(timeElapsed)
 
 
     pygame.quit()

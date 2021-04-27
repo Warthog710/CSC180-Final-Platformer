@@ -13,7 +13,7 @@ class dataRecorder:
         self.__gWorld = gWorld
 
         #If we are not taking screenshots, don't go further
-        if not constants.SCREENSHOTS:
+        if not constants.RECORD_SCREENSHOTS:
             return
             
         self.__lastScreenshot = datetime.now()
@@ -26,7 +26,7 @@ class dataRecorder:
             os.mkdir(self.__screenShotPath)
 
     def takeScreenshot(self, keyState):
-        if not constants.SCREENSHOTS:
+        if not constants.RECORD_SCREENSHOTS:
             if self.__gWorld.getPlayer().gameReset:
                 self.__stat.resetTimeElapsed()
                 self.__gWorld.getPlayer().gameReset = False
