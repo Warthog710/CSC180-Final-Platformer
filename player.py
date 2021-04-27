@@ -1,5 +1,7 @@
 import pygame
 import constants
+
+from datetime import datetime
 class player:
     def __init__(self, pos, gWorld):
         #Textures
@@ -24,6 +26,9 @@ class player:
         #Animation indexes
         self.__idleIndex = 0
         self.__runningIndex = 0
+
+        #Animation update
+        self.__lastAnimationFrame = datetime.now()
 
         #Position. CurrentY holds the y cord the texture will be drawn at. OriginalY holds the original value so we can reset it later
         self.pos = pos
@@ -83,28 +88,38 @@ class player:
     #Animate the player based on state
     def __animate(self):
         animationState = self.__getAnimationState()
+        msElapsed = (datetime.now() - self.__lastAnimationFrame).microseconds / 1000
 
         if 'IDLE' in animationState:
-            self.texture = self.__idleTextures[self.__idleIndex//constants.PLAYER_ANIMATION_FRAME_REPEAT]
-            self.__idleIndex = (self.__idleIndex + 1) % (len(self.__idleTextures) * constants.PLAYER_ANIMATION_FRAME_REPEAT) 
-            self.__runningIndex = 0 
+            if msElapsed >= constants.PLAYER_ANIMATION_FRAME_REPEAT:
+                self.texture = self.__idleTextures[self.__idleIndex]
+                self.__idleIndex = (self.__idleIndex + 1) % len(self.__idleTextures) 
+                self.__runningIndex = 0 
 
-            #Flip texture to be equal to last state
-            if 'bwd' in self.__lastState:
-                return True
-            else:
-                return False
+                # Record frame time
+                self.__lastAnimationFrame = datetime.now()
+
+                #Flip texture to be equal to last state
+                if 'bwd' in self.__lastState:
+                    return True
+                else:
+                    return False
 
         elif 'WALKING' in animationState:
-            self.texture = self.__runTextures[self.__runningIndex//constants.PLAYER_ANIMATION_FRAME_REPEAT]
-            self.__runningIndex = (self.__runningIndex + 1) % (len(self.__runTextures) * constants.PLAYER_ANIMATION_FRAME_REPEAT)
-            self.__idleIndex = 0
-            if self.movingBwd:
-                self.__lastState = self.__states[0]
-                return True
-            else:
-                self.__lastState = self.__states[1]
-                return False
+            if msElapsed >= constants.PLAYER_ANIMATION_FRAME_REPEAT:
+                self.texture = self.__runTextures[self.__runningIndex]
+                self.__runningIndex = (self.__runningIndex + 1) % len(self.__runTextures)
+                self.__idleIndex = 0
+
+                # Record frame time
+                self.__lastAnimationFrame = datetime.now()
+
+                if self.movingBwd:
+                    self.__lastState = self.__states[0]
+                    return True
+                else:
+                    self.__lastState = self.__states[1]
+                    return False
 
         elif 'SLIDING' in animationState:
             self.texture = self.__slidingTex
