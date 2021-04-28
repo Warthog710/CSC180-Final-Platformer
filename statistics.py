@@ -53,6 +53,11 @@ class statistics:
     def resetTimeElapsed(self):
         self.__gameStart = datetime.now()
 
+    #? Resets the game, generally called when 'R' is pressed
+    def resetGame(self):
+        self.resetTimeElapsed()
+        self.__plyr.reset()
+
     def drawHud(self):
         #Detect if the level is finished
         if self.__plyr.distance > (constants.LEVEL_LENGTH - self.__plyr.pos[0]):
@@ -65,6 +70,11 @@ class statistics:
             #Record the score if we have not done so already
             if self.FinalScore == 0:
                 self.FinalScore = self.getScore()
+
+                #Print out statistics
+                print(f'Final Score: {self.FinalScore}')
+                print(f'Coints Collected: {self.__plyr.coinsCollected}')
+                print(f'Time Elapsed: {self.getTimeElapsed()}')
 
         if not self.levelFinished:
             hudStr1 = 'Score: ' + str(self.getScore())
