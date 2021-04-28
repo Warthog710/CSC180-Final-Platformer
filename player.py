@@ -160,17 +160,23 @@ class player:
                 #If I am going down
                 if self.__jumpPower > 0:
                     #I must be on an object... stop the jump, reset to previous y
-                    self.currentY -= self.__jumpPower * timeElapsed
+                    #self.currentY -= self.__jumpPower * timeElapsed
+                    # Slowly incrase the height of the sprite until I am no longer colliding
+                    while self.__gWorld.getObstacles().detectCollision():
+                        self.currentY -= 0.01
+
                     self.isJumping = False
                     self.__jumpPower = -constants.PLAYER_JUMP_VELOCITY
                     self.playerSpeed = constants.PLAYER_SPEED
                     self.onObject = True
 
                 #Else, I must be going up, set jump velocity to 0 and restore to previous position
-                else:
-                    self.currentY -= self.__jumpPower * timeElapsed
-                    self.__jumpPower = 0
+                else:                    
+                    #self.currentY -= self.__jumpPower * timeElapsed
+                    while self.__gWorld.getObstacles().detectCollision():
+                        self.currentY += 0.01
 
+                    self.__jumpPower = 0
 
             if self.currentY > self.originalY:
                 self.isJumping = False

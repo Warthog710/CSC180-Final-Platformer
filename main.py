@@ -51,7 +51,7 @@ def main():
         #? 1.1 Process input for AI
         if constants.AI_PLAYER:
             pred = ai.predictAction(gWorld.getScreen())
-
+            
             # Send the prediction to the input handler
             iHandle.registerPredictedMovement(pred)
 
