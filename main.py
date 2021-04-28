@@ -40,6 +40,8 @@ def main():
                 #If we get an escape key, kill the program
                 if event.key == pygame.K_ESCAPE:
                     running = False
+                elif event.key == pygame.K_r:
+                    stat.resetGame()
                 else:
                     iHandle.registerKeydown(event)
             elif event.type == pygame.KEYUP:
@@ -51,6 +53,9 @@ def main():
         #? 1.1 Process input for AI
         if constants.AI_PLAYER:
             pred = ai.predictAction(gWorld.getScreen())
+
+            # Pretend that the game is running at 60fps
+            timeElapsed = 16.66
             
             # Send the prediction to the input handler
             iHandle.registerPredictedMovement(pred)

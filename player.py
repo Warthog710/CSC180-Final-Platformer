@@ -151,7 +151,7 @@ class player:
             self.__jumpPower += constants.GRAVITY * timeElapsed
 
             #Increase player horinzontal speed while jumping
-            self.playerSpeed += constants.PLAYER_JUMPING_HORIZONTAL_SPEED_INCREASE
+            self.playerSpeed += constants.PLAYER_JUMPING_HORIZONTAL_SPEED_INCREASE * timeElapsed
             if self.playerSpeed > constants.PLAYER_JUMPING_HORIZONTAL_SPEED_MAX_SPEED:
                 self.playerSpeed = constants.PLAYER_JUMPING_HORIZONTAL_SPEED_MAX_SPEED
 
