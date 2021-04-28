@@ -25,7 +25,7 @@ def main():
     dRecorder = dataRecorder(iHandle, stat, gWorld)
 
     #AI Player
-    ai = aiPlayer()
+    ai = aiPlayer(stat)
 
     while running:
         #Ensure game speed

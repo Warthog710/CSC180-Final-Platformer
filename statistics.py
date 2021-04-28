@@ -6,11 +6,11 @@ from datetime import datetime
 
 class statistics:
     def __init__(self, plyr, iHandle, gWorld):
-        self.__plyr = plyr
+        self.plyr = plyr
         self.__iHandle = iHandle
         self.__gWorld = gWorld
         self.__gameStart = datetime.now()
-        self.__lastDistance = self.__plyr.distance
+        self.__lastDistance = self.plyr.distance
         self.__lastMoveTime = datetime.now()
         self.__font = pygame.font.SysFont('./assets/FutilePro.ttf', constants.FONT_SIZE)
         self.levelFinished = False
@@ -19,10 +19,10 @@ class statistics:
 
     def getScore(self):
         #? For every 10 pixels travelled, get 1 point
-        distScore = int(self.__plyr.distance / 10)
+        distScore = int(self.plyr.distance / 10)
         
         #? Score the weighted average of distance travelled and coins collected
-        score =  int((0.8 * distScore) + (0.2 * self.__plyr.coinsCollected))
+        score =  int((0.8 * distScore) + (0.2 * self.plyr.coinsCollected))
 
         #It is possible to get a negative score if the player goes backwards... never report this
         if (score < 0):
@@ -33,10 +33,10 @@ class statistics:
     #? Returns the time since the player last travelled some distance
     def getIdleTime(self):
         #If distance hasn't changed, tick idle time
-        if (self.__lastDistance == self.__plyr.distance):
+        if (self.__lastDistance == self.plyr.distance):
             return (datetime.now() - self.__lastMoveTime).total_seconds()
         else:
-            self.__lastDistance = self.__plyr.distance
+            self.__lastDistance = self.plyr.distance
             self.__lastMoveTime = datetime.now()
             return 0.0
 
@@ -56,11 +56,11 @@ class statistics:
     #? Resets the game, generally called when 'R' is pressed
     def resetGame(self):
         self.resetTimeElapsed()
-        self.__plyr.reset()
+        self.plyr.reset()
 
     def drawHud(self):
         #Detect if the level is finished
-        if self.__plyr.distance > (constants.LEVEL_LENGTH - self.__plyr.pos[0]):
+        if self.plyr.distance > (constants.LEVEL_LENGTH - self.plyr.pos[0]):
             self.levelFinished = True
             
             #Record the time finished if we have not done so already
@@ -73,12 +73,12 @@ class statistics:
 
                 #Print out statistics
                 print(f'Final Score: {self.FinalScore}')
-                print(f'Coints Collected: {self.__plyr.coinsCollected}')
+                print(f'Coints Collected: {self.plyr.coinsCollected}')
                 print(f'Time Elapsed: {self.getTimeElapsed()}')
 
         if not self.levelFinished:
             hudStr1 = 'Score: ' + str(self.getScore())
-            hudStr2 = 'Coins Collected: ' + str(self.__plyr.coinsCollected)
+            hudStr2 = 'Coins Collected: ' + str(self.plyr.coinsCollected)
             hudStr3 = 'Idle Time: ' + str(round(self.getIdleTime(), 2))
             hudStr4 = 'Last Action Time: ' + str(round(self.getLastActionTime(), 2))
             hudStr5 = 'Time Elapsed: ' + str(round(self.getTimeElapsed(), 2))
