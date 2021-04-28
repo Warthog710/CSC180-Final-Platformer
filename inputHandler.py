@@ -102,7 +102,7 @@ class inputHandler:
         self.lastAction = datetime.now()
 
         #If we collide revert the changes
-        if self.__obst.detectCollision():
+        if self.__obst.detectCollision() and not self.__plyr.forcedSlide:
             self.__gWorld.updateBackground((-self.__plyr.playerSpeed * timeElapsed, 0))
             self.__plyr.distance -= (self.__plyr.playerSpeed * timeElapsed)
             self.__plyr.movingFwd = False
