@@ -42,7 +42,7 @@ class obstacles:
 
     #Takes a map object, and loads the map
     def __loadMap(self):
-        mapFile = open('./assets/maps/map.txt', 'r')
+        mapFile = open(constants.GAME_MAP_PATH, 'r')
         obst = {}
 
         for line in mapFile:
