@@ -7,8 +7,6 @@ from gameWorld import gameWorld
 from statistics import statistics
 from aiPlayer import aiPlayer
 
-#TODO Record sources for textures in README.md
-
 def main():
     #Intilize pygame
     pygame.init()
