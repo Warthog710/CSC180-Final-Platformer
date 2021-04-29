@@ -36,6 +36,17 @@ class aiPlayer:
         self.__stat = stat
 
     def saveModelSummary(self):
+        saveFile = open(f'{MODEL_FOLDER}modelResults.txt', 'w')
+
+        if self.__stat.levelFinished:
+            saveFile.write(f'Score: {self.__stat.FinalScore}\n')
+        else:
+            saveFile.write(f'Score: {self.__stat.getScore()}\n')
+
+        saveFile.write(f'Coins Collected: {self.__stat.plyr.coinsCollected}\n')
+        saveFile.write(f'Time Elapsed: {self.__stat.getTimeElapsed()}\n\n')
+        saveFile.close()
+
         with open(f'{MODEL_FOLDER}modelResults.txt', 'a') as f:
             with redirect_stdout(f):
                 self.__model.summary()
@@ -60,11 +71,6 @@ class aiPlayer:
                 pred = self.__model.predict(frameArray)
                 return np.argmax(pred, axis=1)
             elif not self.__savedResults:
-                saveFile = open(f'{MODEL_FOLDER}modelResults.txt', 'w')
-                saveFile.write(f'Score: {self.__stat.FinalScore}\n')
-                saveFile.write(f'Coins Collected: {self.__stat.plyr.coinsCollected}\n')
-                saveFile.write(f'Time Elapsed: {self.__stat.getTimeElapsed()}\n\n')
-                saveFile.close()
                 self.saveModelSummary()
                 self.__savedResults = True
             
