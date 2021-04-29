@@ -15,7 +15,7 @@ The transfer learning models also performed admirably with all but model ``[2, 0
 ![Transfer Learning Performance Table](./images/transfer_learning_table.jpg?raw=true "Transfer Learning Performance Table")<br>
 ***Note:*** All models with a score of >900 finished the level.
 #### Game Information:
-To run the game, have all the necessary packages installed, place all game files/directories in the same folder and execute ``main.py``. The game is locked to a resolution of 1280x720. Also of note, while an AI model is acting as the player, the game runs at a pseudo 60fps. This allows ample processing time for model predictions. The unfortunate side effect of this strategy is the game appears to be played in slow motion. However, due to this approach, models can be directly loaded into *Keras* as described in the *<a href="#necessary-packages">Loading a Tensorflow Model</a>* section below.
+To run the game, have all the necessary packages installed, place all game files/directories in the same folder and execute ``main.py``. The game is locked to a resolution of 1280x720. Also of note, while an AI model is acting as the player, the game runs at a pseudo 60fps. This allows ample processing time for model predictions. The unfortunate side effect of this strategy is the game appears to be played in slow motion. However, due to this approach, models can be directly loaded into *Keras* as described in the *Loading a Tensorflow Model* section below.
 
 ##### Game Controls:
 Listed below are the game controls. Please note, an AI player is only responsible for the W and S actions.
