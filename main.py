@@ -42,6 +42,8 @@ def main():
                     running = False
                 elif event.key == pygame.K_r:
                     stat.resetGame()
+                elif event.key == pygame.K_p and constants.AI_PLAYER:
+                    ai.saveModelSummary()
                 else:
                     iHandle.registerKeydown(event)
             elif event.type == pygame.KEYUP:
