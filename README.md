@@ -59,6 +59,10 @@ A pre-trained model is provided in the model folder. This model should be capabl
 * Tensorflow (v2.4.1)
 * Keras (v2.4.0)
 
+#### Dataset link:
+Below you can find the dataset that we used to train our models. This dataset contains 5095 (224x224) images. The label for each image is contained in each labels name. The following Python code can be used to extract it: ``label = (imageName.split('_')[1]).split('.')[0]``  
+<a href="https://drive.google.com/file/d/1qkFb5nMHktxyvVdJzOmI6hDti1KzmgMt/view?usp=sharing">Panda Runner Dataset</a>
+
 <hr>
 
 #### Asset Sources/Licenses:
